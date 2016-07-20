@@ -289,10 +289,6 @@ def main(fits_filenm, workdir, jobid, zaplist, ddplans):
         print "The observation is too short (%.2f s) to search."%job.raw_T
         sys.exit(1)
     job.total_time = time.time()
-    if job.dt == 163.84:
-      ddplans = ddplans[str(job.nchans)+"slow"]
-    else:
-      ddplans = ddplans[str(job.nchans)+"fast"]
     
     # Use the specified zaplist if provided.  Otherwise use whatever is in
     # this directory
@@ -321,7 +317,7 @@ def main(fits_filenm, workdir, jobid, zaplist, ddplans):
         os.makedirs(tmpdir)
     except: pass
 
-    print "\nBeginning GBNCC search of '%s'"%job.fits_filenm
+    print "\nBeginning GBT820 search of '%s'"%job.fits_filenm
     print "UTC time is:  %s"%(time.asctime(time.gmtime()))
 
     rfifindout=job.basefilenm+"_rfifind.out"
@@ -637,51 +633,19 @@ def main(fits_filenm, workdir, jobid, zaplist, ddplans):
 
 
 if __name__ == "__main__":
-    # Create our de-dispersion plans
-    # All GBNCC data have 4096 channels, but the earliest data is sampled
-    # at 163.84us rather than 81.92 us...
-    ddplans = {'4096slow':[], '4096fast':[]}
-    if (0):
-        #
-        # If there is <=1GB of RAM per CPU core, the following are preferred
-        #
-        # For 4096slow chan data: lodm dmstep dms/call #calls #subs downsamp
-        ddplans['4096slow'].append(dedisp_plan(    0.0,0.02, 86,81,128, 1))
-        ddplans['4096slow'].append(dedisp_plan( 139.32,0.03,102,27,128, 2))
-        ddplans['4096slow'].append(dedisp_plan( 221.94,0.05,102,33,128, 4))
-        ddplans['4096slow'].append(dedisp_plan( 390.24,0.10,102,37,128, 8))
-        ddplans['4096slow'].append(dedisp_plan( 767.64,0.30, 92,41,128,16))
-        ddplans['4096slow'].append(dedisp_plan(1899.24,0.50,102,22,128, 32))
-        # For 4096fast chan data: lodm dmstep dms/call #calls #subs downsamp
-        ddplans['4096fast'].append(dedisp_plan(    0.0,0.01, 86,81,128, 1))
-        ddplans['4096fast'].append(dedisp_plan(  69.66,0.02, 86,33,128, 2))
-        ddplans['4096fast'].append(dedisp_plan( 126.42,0.03,102,29,128, 4))
-        ddplans['4096fast'].append(dedisp_plan( 215.16,0.05,102,33,128, 8))
-        ddplans['4096fast'].append(dedisp_plan( 383.46,0.10,102,38,128,16))
-        ddplans['4096fast'].append(dedisp_plan( 771.06,0.30, 92,41,128,32))
-        ddplans['4096fast'].append(dedisp_plan(1902.66,0.50,102,22,128,64))
-    else:
-        # If there is >2GB of RAM per CPU core, the following are preferred
-        #
-        # For 4096slow chan data: lodm dmstep dms/call #calls #subs downsamp
-        ddplans['4096slow'].append(dedisp_plan(    0.0,0.02,172,41,256, 1))
-        ddplans['4096slow'].append(dedisp_plan( 141.04,0.03,204,14,256, 2))
-        ddplans['4096slow'].append(dedisp_plan( 226.72,0.05,204,16,256, 4))
-        ddplans['4096slow'].append(dedisp_plan( 389.92,0.10,204,19,256, 8))
-        ddplans['4096slow'].append(dedisp_plan( 777.52,0.30,184,20,256,16))
-        ddplans['4096slow'].append(dedisp_plan(1881.52,0.50,204,11,256,32))
-        # For 4096fast chan data: lodm dmstep dms/call #calls #subs downsamp
-        ddplans['4096fast'].append(dedisp_plan(    0.0,0.01,172,41,256, 1))
-        ddplans['4096fast'].append(dedisp_plan(  70.52,0.02,172,16,256, 2))
-        ddplans['4096fast'].append(dedisp_plan( 125.56,0.03,204,15,256, 4))
-        ddplans['4096fast'].append(dedisp_plan( 217.36,0.05,204,17,256, 8))
-        ddplans['4096fast'].append(dedisp_plan( 390.76,0.10,204,19,256,16))
-        ddplans['4096fast'].append(dedisp_plan( 778.36,0.30,204,20,256,32))
-        ddplans['4096fast'].append(dedisp_plan(1882.36,0.50,204,11,256,64))
+    ddplans = []
+    #lodm dmstep dms/call #calls #subs downsamp
+    ddplans.append(dedisp_plan(   0.0, 0.05, 102, 41, 128, v1))
+    ddplans.append(dedisp_plan( 209.1, 0.10, 102, 15, 128,  2))
+    ddplans.append(dedisp_plan( 362.1, 0.20, 102, 17, 128,  4))
+    ddplans.append(dedisp_plan( 708.9, 0.50,  88, 19, 128,  8))
+    ddplans.append(dedisp_plan(1544.9, 1.00,  88, 18, 128, 16))
+    ddplans.append(dedisp_plan(3128.9, 2.00,  88, 11, 128, 32))
+
 
     # Create argument parser
     parser = argparse.ArgumentParser(description="Search data from the "\
-                                     "GBNCC survey for pulsars and transients")
+                                     "GBT820 survey for pulsars and transients")
     parser.add_argument("-w", "--workdir", default=".", 
                         help="Working directory")
     parser.add_argument("-i", "--id", dest="jobid", default=None, 
@@ -689,7 +653,7 @@ if __name__ == "__main__":
     parser.add_argument("-z", "--zaplist", default=None,
                         help="A list of Fourier frequencies to zap")
     parser.add_argument("fits_filenm",
-                        help="A psrfits file from the GBNCC survey")
+                        help="A psrfits file from the GBT820 survey")
     args = parser.parse_args()
     
     main(args.fits_filenm, args.workdir, args.jobid, args.zaplist, ddplans)

@@ -1,0 +1,6 @@
+pipeline/lib/python/config-use.py
+jobs
+logs
+results
+pipeline/bin/*.pyc
+pipeline/lib/python/*.pyc

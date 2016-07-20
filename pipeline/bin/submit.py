@@ -7,10 +7,10 @@ checkpoints = []
 
 queue = PBSQuery.PBSQuery()
 
-print("Starting GBNCC job submitter...")
+print("Starting GBT820 job submitter...")
 while True:
     db = database.Database("observations")
-    query = "SELECT ProcessingID,FileName FROM GBNCC WHERE "\
+    query = "SELECT ProcessingID,FileName FROM GBT820 WHERE "\
             "ProcessingStatus='i'"
     db.execute(query)
     ret = db.fetchall()
@@ -26,14 +26,14 @@ while True:
                         #with open(checkpoint, "w") as f:
                         #    f.write(nodenm+"\n")
                         #    f.write("0 0\n")
-                        query = "UPDATE GBNCC SET ProcessingStatus='p' "\
+                        query = "UPDATE GBT820 SET ProcessingStatus='p' "\
                                 "WHERE FileName='{filenm}'".format(filenm=filenm)
                         db.execute(query)
                     else:
                         pass
     db.close()
     
-    filenms = glob.glob(os.path.join(config.datadir, "guppi*GBNCC*fits"))
+    filenms = glob.glob(os.path.join(config.datadir, "guppi*fits"))
     nqueued = utils.getqueue(config.machine,queue)
 
     while nqueued<config.queuelim and (len(filenms)>0 or len(checkpoints)>0):
@@ -98,7 +98,7 @@ while True:
                         f.write("0 0\n")
 
                 date = datetime.datetime.now()
-                query = "UPDATE GBNCC SET ProcessingStatus='{status}',"\
+                query = "UPDATE GBT820 SET ProcessingStatus='{status}',"\
                         "ProcessingID='{jobid}',ProcessingSite='{site}',"\
                         "ProcessingAttempts=ProcessingAttempts+1,"\
                         "ProcessingDate='{date}',"\
