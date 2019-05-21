@@ -9,7 +9,7 @@ sys.stdout.flush()
 packages = ["os", "sys", "shutil", "stat", "socket", "struct", "subprocess",
             "glob", "contextlib", "signal", "unittest", "re", "platform",
             "tarfile", "time", "datetime", "pytz", "MySQLdb", "xml",
-            "numpy", "scipy", "pylab", "mpfit", "pyfits", "cPickle", "pickle",
+            "numpy", "scipy", "pylab", "mpfit", "astropy", "cPickle", "pickle",
             "psr_utils", "pyslalib", "presto", "prepfold", "pypsrcat",
             "sifting", "ratings", "diagnostics", "profile_tools", "infodata",
             "analyse_sp", "group_sp", "sp_utils",

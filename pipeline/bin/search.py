@@ -2,8 +2,12 @@
 #import analyse_sp
 #import Group_sp_events
 import os, sys, shutil, stat, glob, subprocess, time, socket, struct, tarfile
-import argparse, numpy, pyfits, presto, sifting, psr_utils
+import argparse, numpy, presto, sifting, psr_utils
 import ratings, diagnostics, config
+try:
+    import pyfits
+except ImportError:
+    from astropy.io import fits as pyfits
 
 checkpointdir = config.jobsdir
 basetmpdir    = config.basetmpdir
@@ -54,7 +58,7 @@ def get_baryv(ra, dec, mjd, T, obs="GB"):
     bts = numpy.zeros(nn, dtype=numpy.float64)
     vel = numpy.zeros(nn, dtype=numpy.float64)
     
-    presto.barycenter(tts, bts, vel, nn, ra, dec, obs, "DE200")
+    presto.barycenter(tts, bts, vel, ra, dec, obs, "DE200")
     return vel.mean()
 
 def find_masked_fraction(obs):
@@ -635,7 +639,7 @@ def main(fits_filenm, workdir, jobid, zaplist, ddplans):
 if __name__ == "__main__":
     ddplans = []
     #lodm dmstep dms/call #calls #subs downsamp
-    ddplans.append(dedisp_plan(   0.0, 0.05, 102, 41, 128, v1))
+    ddplans.append(dedisp_plan(   0.0, 0.05, 102, 41, 128,  1))
     ddplans.append(dedisp_plan( 209.1, 0.10, 102, 15, 128,  2))
     ddplans.append(dedisp_plan( 362.1, 0.20, 102, 17, 128,  4))
     ddplans.append(dedisp_plan( 708.9, 0.50,  88, 19, 128,  8))

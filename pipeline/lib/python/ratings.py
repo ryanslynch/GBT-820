@@ -11,6 +11,7 @@ import psr_utils as PU
 import pypsrcat as PSRCAT
 import profile_tools as PT
 import cPickle
+import config
 import ubc_AI.data
 
 try:

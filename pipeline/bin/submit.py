@@ -74,9 +74,12 @@ while True:
                                               zaplist=config.zaplist,
                                               pipelinedir=config.pipelinedir,
                                               walltimelim=config.walltimelim, 
-                                              email=config.email))
+                                              email=config.email,
+                                              user=config.user))
         subfile.close()
+        print("Wrote %s"%subfilenm)
         jobid,msg = utils.subjob(config.machine,subfilenm,options="-o {0} -e {0}".format(config.logsdir))
+        print("Submitted %s; jobid=%s, msg=%s"%(subfilenm,jobid,msg))
         if jobid is None: 
             print("ERROR: %s: %s"%(jobnm,msg))
         
