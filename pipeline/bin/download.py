@@ -5,17 +5,17 @@ import database, config, utils
 
 def download(outdir):
      db = database.Database("observations")
+     query  = "SELECT ID,FilePath,FileName FROM GBT820 WHERE "\
+              "ProcessingStatus='u'"
      #query  = "SELECT ID,FilePath,FileName FROM GBT820 WHERE "\
      #         "ProcessingStatus='u' OR (ProcessingStatus='f' AND "\
      #         "ProcessingAttempts < 10)"
-     query  = "SELECT ID,FilePath,FileName FROM GBT820 WHERE "\
-              "ProcessingStatus='u'"
      db.execute(query)
      ret     = db.cursor.fetchone()
      if ret is not None:
           ID      = ret[0]
           filenm  = os.path.join(*ret[1:])
-          cmd     = "rsync astro.cv.nrao.edu:%s %s"%(filenm,outdir)
+          cmd     = "rsync %s %s"%(filenm,outdir)
           
           query   = "UPDATE GBT820 SET ProcessingStatus='d',"\
                     "ProcessingSite='%s' WHERE ID=%i"%(config.machine,ID)

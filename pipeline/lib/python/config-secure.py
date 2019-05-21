@@ -1,15 +1,15 @@
 import os, subprocess
 
 # Name of institution where pipeline is being run
-institution = "McGill"
+institution = "NRAO"
 # Name of HPC machine where pipeline is being run
-machine     = "guillimin"
+machine     = "nimrod"
 # Timezone of processing site
 timezone    = "Canada/Eastern"
 # User name on 'machine'
 user        = "rlynch"
 # Email address where job notifications will be sent (if enabled)
-email       = "rlynch+gbt820_jobs@physics.mcgill.ca"
+email       = "rlynch+gbt820_jobs@nrao.edu"
 # Walltime limit (hh:mm:ss)
 walltimelim = "120:00:00"
 # Maximum size of the 'pending' job queue
@@ -18,17 +18,19 @@ queuelim    = 30
 # 'pending' queue is full
 sleeptime   = 5*60
 # Disk quota size of datadir (in bytes)
-datadir_lim = 1024**4 - 12*1024**3 # 1 TB - 12 GB of overhead
+datadir_lim = 100*1024**3 - 12*1024**3 # 1 TB - 12 GB of overhead
 # Top level analysis directory
-topdir      = "/gs/project/bgf-180-ad/GBT820"
+topdir      = "/data1/people/rlynch/GBT820"
 # Base working directory for data reduction (should have at least 13 GB free)
-baseworkdir = "/localscratch"
+baseworkdir = "/scratch"
 # Base temporary directory for data reduction (should have at least 2 GB free)
-basetmpdir  = "/localscratch"
+basetmpdir  = "/scratch"
 # Directory where pipeline scripts are stored
 pipelinedir = os.path.join(topdir, "pipeline")
+# Directory where third party software is found
+softwaredir = "/data1/people/rlynch/GBNCC-search/software
 # Directory where raw data files are stored before being processed
-datadir     = "/gs/scratch/rlynch/GBT820"
+datadir     = os.path.join(topdor,"data")
 # Directory where job submission files are stored
 jobsdir     = os.path.join(topdir, "jobs")
 # Directory wehre log files are stored
@@ -48,7 +50,6 @@ DATABASES = {
     "passwd" : "CONTACT rlynch@nrao.edu FOR DATABASE PASSWORD",
         },
     }
-
 
 # Dictionary for holding job submission scripts
 subscripts = {"guillimin": 
@@ -80,6 +81,24 @@ $3 $4\" > {jobsdir}/{jobnm}.checkpoint
 fi
 cd {workdir}
 search.py -w {workdir} -i {hashnm} {basenm}.fits 
+#rm -rf {workdir}
+""",
+
+"nimrod":
+"""#!/bin/bash
+#PBS -m a
+#PBS -u {user}
+#PBS -V
+#PBS -M {email}
+#PBS -N {jobnm}
+#PBS -l nodes=nimrod:ppn1+1:new:ppn=1
+#PBS -l walltime={walltime}
+
+mkdir -p {workdir}
+mv {filenm} {workdir}
+cp {zaplist} {workdir}
+cd {workdir}
+search.py -w {workdir} -i {hashnm} {basenm}.fits
 #rm -rf {workdir}
 """
 }
